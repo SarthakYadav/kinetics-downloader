@@ -40,6 +40,7 @@ def cut_video(raw_video_path, slice_path, start, end):
 
   return_code = subprocess.call(["ffmpeg", "-loglevel", "quiet", "-i", raw_video_path,
                                  "-filter:v", "scale=-1:240",
+                                 '-q:v', "2",
                                  "-strict", "-2",
                                  "-ss", str(start), "-to", str(end), slice_path])
   success = return_code == 0

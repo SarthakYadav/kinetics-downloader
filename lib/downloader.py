@@ -15,9 +15,12 @@ def download_video(video_id, download_path, video_format="mp4", log_file=None):
   else:
     stderr = open(log_file, "a")
 
+#   return_code = subprocess.call(
+#     ["youtube-dl", "https://youtube.com/watch?v={}".format(video_id), "--quiet", "-f",
+#      "bestvideo[ext={}]+bestaudio/best".format(video_format), "--output", download_path, "--no-continue"], stderr=stderr)
   return_code = subprocess.call(
     ["youtube-dl", "https://youtube.com/watch?v={}".format(video_id), "--quiet", "-f",
-     "bestvideo[ext={}]+bestaudio/best".format(video_format), "--output", download_path, "--no-continue"], stderr=stderr)
+     "bestvideo[height<=480][[width<=640]][ext={}]+bestaudio/[height <=? 480]".format(video_format), "--output", download_path, "--no-continue"], stderr=stderr)
   success = return_code == 0
 
   if log_file is not None:
@@ -35,7 +38,9 @@ def cut_video(raw_video_path, slice_path, start, end):
   :return:                  Tuple: Path to the video slice and a bool indicating success.
   """
 
-  return_code = subprocess.call(["ffmpeg", "-loglevel", "quiet", "-i", raw_video_path, "-strict", "-2",
+  return_code = subprocess.call(["ffmpeg", "-loglevel", "quiet", "-i", raw_video_path,
+                                 "-filter:v", "scale=-1:240",
+                                 "-strict", "-2",
                                  "-ss", str(start), "-to", str(end), slice_path])
   success = return_code == 0
 
